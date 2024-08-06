@@ -3,6 +3,7 @@ import { Typography, Button, Loader } from "ui";
 import { Header, Section } from "components";
 import {
   ScrollView,
+  SectionList,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -20,44 +21,78 @@ const Content = observer(() => {
 
   const [loading, setLoading] = useState(false);
 
+  const fetchData = async () => {
+    await getResult();
+    setLoading(false);
+  };
+
   useEffect(() => {
     setLoading(true);
-    const fetchData = async () => {
-      await getResult();
-      setLoading(false);
-    };
 
     fetchData();
   }, []);
 
   const handleEndTest = () => {
     navigation.navigate("Home");
+    setLoading(true);
+    fetchData();
   };
+
+  const DATA = [
+    { title: "Результаты", data: ["Результаты"] },
+    { title: result?.content, data: [result?.content] },
+  ];
 
   return (
     <>
       {loading ? (
         <Loader />
       ) : (
-        <View style={styles.wrapper}>
-          <Header />
-          <Section style={styles.container}>
-            <Typography gradient>{result?.title}</Typography>
-            <RenderHtml
-              contentWidth={width - 20}
-              source={{ html: result?.content || "" }}
-              systemFonts={[...defaultSystemFonts, "Inter"]}
-              tagsStyles={{
-                p: {
-                  fontSize: 18,
-                  color: "#000",
-                  fontFamily: "Inter",
-                },
-              }}
-            />
-            <Button onPress={handleEndTest}>На главный экран</Button>
-          </Section>
-        </View>
+        <SectionList
+          sections={DATA}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={() => (
+            <View style={{ marginBottom: 10 }}>
+              <Header />
+            </View>
+          )}
+          ListFooterComponent={() => (
+            <View style={{ marginTop: 10, marginBottom: 5 }}>
+              <Button onPress={handleEndTest}>На главный экран</Button>
+            </View>
+          )}
+          keyExtractor={(item, index) => String(item) + index}
+          renderItem={({ section: { title } }) => {
+            if (title === "Результаты") return null;
+            return (
+              <View style={styles.content}>
+                <RenderHtml
+                  contentWidth={width - 20}
+                  source={{ html: title || "" }}
+                  systemFonts={[...defaultSystemFonts, "Inter"]}
+                  tagsStyles={{
+                    p: {
+                      fontSize: 18,
+                      color: "#000",
+                      fontFamily: "Inter",
+                    },
+                  }}
+                />
+              </View>
+            );
+          }}
+          renderSectionHeader={({ section: { title } }) => {
+            if (title === "Результаты") return null;
+            return (
+              <View style={styles.header}>
+                <Typography style={styles.title} gradient>
+                  {"Результаты"}
+                </Typography>
+              </View>
+            );
+          }}
+          stickySectionHeadersEnabled
+        />
       )}
     </>
   );
@@ -68,7 +103,20 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   wrapper: {
+    flex: 1,
     gap: 10,
+  },
+  header: {
+    backgroundColor: "#F8FBFF",
+    padding: 15,
+    borderRadius: 10,
+  },
+  title: {},
+  content: {
+    backgroundColor: "#F8FBFF",
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    marginTop: 10,
   },
 });
 

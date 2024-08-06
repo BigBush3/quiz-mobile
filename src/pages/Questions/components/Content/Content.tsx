@@ -16,6 +16,8 @@ const Content = observer(() => {
 
   const [loading, setLoading] = useState(false);
 
+  const [focus, setFocus] = useState(0);
+
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -59,8 +61,18 @@ const Content = observer(() => {
           {currentQuestion?.answers.map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={{ flex: 1 }}
+              style={[
+                { flex: 1 },
+                {
+                  borderWidth: 2,
+                  borderColor: focus === item.answer_id ? "#9192FC" : "#F8FBFF",
+                  borderRadius: 10,
+                },
+              ]}
               onPress={() => handleAnswer(item.answer_id)}
+              onPressIn={() => setFocus(item.answer_id)}
+              onPressOut={() => setFocus(0)}
+              activeOpacity={1}
             >
               <Section style={styles.answer}>
                 <QuestionIcon />
@@ -83,6 +95,7 @@ const styles = StyleSheet.create({
   wrapper: {
     gap: 10,
     flex: 1,
+    marginBottom: 5,
   },
   title: {},
   question: {
@@ -98,6 +111,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#000",
     marginLeft: 15,
+    marginRight: 15,
+    fontWeight: "600",
   },
 });
 

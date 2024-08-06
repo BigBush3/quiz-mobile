@@ -16,6 +16,7 @@ class UserService {
 
     const { data } = await userApi.getDay();
     this.dayInfo = data;
+    console.log(data);
   };
 }
 

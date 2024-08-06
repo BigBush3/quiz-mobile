@@ -54,55 +54,57 @@ const Content = observer(() => {
   };
 
   return (
-    <Section
-      style={[
-        styles.container,
-        {
-          maxHeight:
-            status === "error"
-              ? Platform.OS === "android"
-                ? 330
-                : 310
-              : Platform.OS === "android"
-              ? 290
-              : 270,
-        },
-      ]}
-    >
-      <Typography gradient style={styles.title}>
-        Вход
-      </Typography>
-      <Input
-        label="Код из почты"
-        value={password}
-        onChangeText={handleChangePassword}
-        status={status}
-        errorText="Неверный код"
-      />
-      <TouchableOpacity disabled={timeLeft > 0} onPress={handlePressSendCode}>
-        {timeLeft > 0 ? (
-          <View style={styles.sendContainer}>
-            <Typography gradient style={[styles.sendCodeDisable]}>
+    <View style={styles.wrapper}>
+      <Section
+        style={[
+          styles.container,
+          {
+            maxHeight:
+              status === "error"
+                ? Platform.OS === "android"
+                  ? 330
+                  : 310
+                : Platform.OS === "android"
+                ? 290
+                : 270,
+          },
+        ]}
+      >
+        <Typography gradient style={styles.title}>
+          Вход
+        </Typography>
+        <Input
+          label="Код из почты"
+          value={password}
+          onChangeText={handleChangePassword}
+          status={status}
+          errorText="Неверный код"
+        />
+        <TouchableOpacity disabled={timeLeft > 0} onPress={handlePressSendCode}>
+          {timeLeft > 0 ? (
+            <View style={styles.sendContainer}>
+              <Typography gradient style={[styles.sendCodeDisable]}>
+                Отправить код заново
+              </Typography>
+              <Typography gradient style={styles.time}>
+                {formatTime(timeLeft)}
+              </Typography>
+            </View>
+          ) : (
+            <Typography gradient style={styles.sendCode}>
               Отправить код заново
             </Typography>
-            <Typography gradient style={styles.time}>
-              {formatTime(timeLeft)}
-            </Typography>
-          </View>
-        ) : (
-          <Typography gradient style={styles.sendCode}>
-            Отправить код заново
-          </Typography>
-        )}
-      </TouchableOpacity>
-      <Button
-        style={{ opacity: status === "success" ? 1 : 0.25 }}
-        onPress={handleNext}
-        disabled={status !== "success"}
-      >
-        Продолжить
-      </Button>
-    </Section>
+          )}
+        </TouchableOpacity>
+        <Button
+          style={{ opacity: status === "success" ? 1 : 0.25 }}
+          onPress={handleNext}
+          disabled={status !== "success"}
+        >
+          Продолжить
+        </Button>
+      </Section>
+    </View>
   );
 });
 
@@ -131,6 +133,10 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  wrapper: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
 

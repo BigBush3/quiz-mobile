@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Typography, Input, Button } from "ui";
 import { Section } from "components";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { authService } from "shared/services";
 import { useTypedNavigation } from "shared/hooks/useTypedNavigation";
@@ -33,22 +33,24 @@ const Content = observer(() => {
   };
 
   return (
-    <Section style={styles.container}>
-      <Typography gradient>Вход</Typography>
-      <Input
-        label="Почта"
-        value={email}
-        onChangeText={handleChangeEmail}
-        status={status}
-      />
-      <Button
-        style={[styles.button, { opacity: status === "success" ? 1 : 0.25 }]}
-        onPress={handleNext}
-        disabled={status !== "success"}
-      >
-        Продолжить
-      </Button>
-    </Section>
+    <View style={styles.wrapper}>
+      <Section style={styles.container}>
+        <Typography gradient>Вход</Typography>
+        <Input
+          label="Почта"
+          value={email}
+          onChangeText={handleChangeEmail}
+          status={status}
+        />
+        <Button
+          style={[styles.button, { opacity: status === "success" ? 1 : 0.25 }]}
+          onPress={handleNext}
+          disabled={status !== "success"}
+        >
+          Продолжить
+        </Button>
+      </Section>
+    </View>
   );
 });
 
@@ -57,10 +59,14 @@ const styles = StyleSheet.create({
     gap: 20,
     alignItems: "center",
     flexGrow: 1,
-    maxHeight: Platform.OS === "android" ? 250 :230,
+    maxHeight: Platform.OS === "android" ? 250 : 230,
   },
   button: {
     opacity: 1,
+  },
+  wrapper: {
+    flex: 1,
+    justifyContent: "center",
   },
 });
 

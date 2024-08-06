@@ -1,13 +1,13 @@
-import { View, StyleSheet, ViewProps } from "react-native";
+import { View, StyleSheet, ViewProps, Animated } from "react-native";
 import React from "react";
 
 interface SectionProps extends ViewProps {}
 
 const Section: React.FC<SectionProps> = ({ children, style, ...props }) => {
   return (
-    <View style={[styles.container, style]} {...props}>
+    <Animated.View style={[styles.container, style]} {...props}>
       {children}
-    </View>
+    </Animated.View>
   );
 };
 

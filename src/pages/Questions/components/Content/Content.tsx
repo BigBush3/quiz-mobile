@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Loader } from "ui";
 import { Header, Section } from "components";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { quizService } from "shared/services";
 import { useTypedNavigation } from "shared/hooks/useTypedNavigation";
@@ -15,8 +21,23 @@ const Content = observer(() => {
   const navigation = useTypedNavigation();
 
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [focus, setFocus] = useState(0);
+
+  const [opacity] = useState(new Animated.Value(1));
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: loading ? 0.25 : 1,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  }, [loading]);
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -32,24 +53,28 @@ const Content = observer(() => {
         );
       }
 
+      setFocus(0);
       setLoading(false);
+      setIsLoading(false);
     };
 
     fetchData();
   }, [currentNumber]);
 
-  const handleAnswer = (answerId: number) => {
-    sendAnswer(currentQuestion?.question_id || 0, answerId);
+  const handleAnswer = async (answerId: number) => {
+    setFocus(answerId);
+    setLoading(true);
+    await sendAnswer(currentQuestion?.question_id || 0, answerId);
   };
 
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <Loader />
       ) : (
         <View style={styles.wrapper}>
-          <Header />
-          <Section style={styles.container}>
+          <Header opacity={opacity} />
+          <Section style={[styles.container, { opacity }]}>
             <Typography style={styles.title} gradient>
               Вопрос {currentQuestion?.question_number} из{" "}
               {currentQuestion?.questions_count}
@@ -59,28 +84,31 @@ const Content = observer(() => {
             </Typography>
           </Section>
           {currentQuestion?.answers.map((item, index) => (
-            <TouchableOpacity
+            <Animated.View
               key={index}
-              style={[
-                { flex: 1 },
-                {
-                  borderWidth: 2,
-                  borderColor: focus === item.answer_id ? "#9192FC" : "#F8FBFF",
-                  borderRadius: 10,
-                },
-              ]}
-              onPress={() => handleAnswer(item.answer_id)}
-              onPressIn={() => setFocus(item.answer_id)}
-              onPressOut={() => setFocus(0)}
-              activeOpacity={1}
+              style={[{ flex: 1 }, focus !== item.answer_id && { opacity }]}
             >
-              <Section style={styles.answer}>
-                <QuestionIcon />
-                <Typography style={styles.answerTitle}>
-                  {item.answer_title}
-                </Typography>
-              </Section>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  { flex: 1 },
+                  {
+                    borderWidth: 2,
+                    borderColor:
+                      focus === item.answer_id ? "#9192FC" : "#F8FBFF",
+                    borderRadius: 10,
+                  },
+                ]}
+                onPress={() => handleAnswer(item.answer_id)}
+                activeOpacity={1}
+              >
+                <Section style={styles.answer}>
+                  <QuestionIcon />
+                  <Typography style={styles.answerTitle}>
+                    {item.answer_title}
+                  </Typography>
+                </Section>
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
       )}

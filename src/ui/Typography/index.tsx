@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextProps } from "react-native";
+import { Animated, StyleSheet, Text, TextProps } from "react-native";
 import React from "react";
 import MaskedView from "@react-native-masked-view/masked-view";
 import LinearGradient from "react-native-linear-gradient";
@@ -20,7 +20,7 @@ export const Typography: React.FC<TypographyProps> = ({
           end={{ x: 1, y: 0 }}
           colors={["#9192FC", "#5C5CDE"]}
         >
-          <Text {...props} style={[props.style, { opacity: 0 }]} />
+          <Animated.Text {...props} style={[props.style, { opacity: 0 }]} />
         </LinearGradient>
       </MaskedView>
     );
@@ -34,9 +34,13 @@ export const Typography: React.FC<TypographyProps> = ({
         </GradientText>
       );
     case false:
-      return <Text style={[styles.text, style]}>{children}</Text>;
+      return (
+        <Animated.Text style={[styles.text, style]}>{children}</Animated.Text>
+      );
     default:
-      return <Text style={[styles.text, style]}>{children}</Text>;
+      return (
+        <Animated.Text style={[styles.text, style]}>{children}</Animated.Text>
+      );
   }
 };
 

@@ -3,6 +3,7 @@ import { Typography, Loader } from "ui";
 import { Header, Section } from "components";
 import {
   Animated,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginLeft: 15,
     marginRight: 15,
-    fontWeight: "600",
+    fontWeight: Platform.OS === "android" ? "800" : "600",
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Loader } from "ui";
+import { Typography, Loader, Button } from "ui";
 import { Header, Section } from "components";
 import {
   Animated,
@@ -21,7 +21,6 @@ const Content = observer(() => {
 
   const navigation = useTypedNavigation();
 
-  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [focus, setFocus] = useState(0);
@@ -30,18 +29,17 @@ const Content = observer(() => {
 
   useEffect(() => {
     Animated.timing(opacity, {
-      toValue: loading ? 0.25 : 1,
-      duration: 100,
+      toValue: focus !== 0 ? 0.25 : 1,
+      duration: focus !== 0 ? 150 : 250,
       useNativeDriver: true,
     }).start();
-  }, [loading]);
+  }, [focus]);
 
   useEffect(() => {
     setIsLoading(true);
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     const fetchData = async () => {
       const data = await getQuestion();
 
@@ -55,17 +53,22 @@ const Content = observer(() => {
       }
 
       setFocus(0);
-      setLoading(false);
       setIsLoading(false);
     };
 
     fetchData();
   }, [currentNumber]);
 
-  const handleAnswer = async (answerId: number) => {
-    setFocus(answerId);
-    setLoading(true);
-    await sendAnswer(currentQuestion?.question_id || 0, answerId);
+  const handleFocusAnswer = async (answerId: number) => {
+    if (focus === 0 || focus !== answerId) {
+      setFocus(answerId);
+    } else {
+      setFocus(0);
+    }
+  };
+
+  const handleAnswer = async () => {
+    await sendAnswer(currentQuestion?.question_id || 0, focus);
   };
 
   return (
@@ -99,7 +102,7 @@ const Content = observer(() => {
                     borderRadius: 10,
                   },
                 ]}
-                onPress={() => handleAnswer(item.answer_id)}
+                onPress={() => handleFocusAnswer(item.answer_id)}
                 activeOpacity={1}
               >
                 <Section style={styles.answer}>
@@ -111,6 +114,7 @@ const Content = observer(() => {
               </TouchableOpacity>
             </Animated.View>
           ))}
+          <Button onPress={handleAnswer}>Далее</Button>
         </View>
       )}
     </>

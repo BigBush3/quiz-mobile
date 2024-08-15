@@ -16,7 +16,7 @@ import { QuestionIcon } from "shared/icons";
 import { CommonActions } from "@react-navigation/native";
 
 const Content = observer(() => {
-  const { getQuestion, currentNumber, sendAnswer, currentQuestion } =
+  const { getQuestion, currentNumber, sendAnswer, currentQuestion, goBack } =
     quizService;
 
   const navigation = useTypedNavigation();
@@ -71,51 +71,73 @@ const Content = observer(() => {
     await sendAnswer(currentQuestion?.question_id || 0, focus);
   };
 
+  const handleBack = async () => {
+    setFocus(-1);
+
+    if (currentQuestion?.question_number === 1) {
+      navigation.goBack();
+    } else {
+      await goBack();
+    }
+  };
+
   return (
     <>
       {isLoading ? (
         <Loader />
       ) : (
-        <View style={styles.wrapper}>
-          <Header opacity={opacity} />
-          <Section style={[styles.container, { opacity }]}>
-            <Typography style={styles.title} gradient>
-              Вопрос {currentQuestion?.question_number} из{" "}
-              {currentQuestion?.questions_count}
-            </Typography>
-            <Typography style={styles.question}>
-              {currentQuestion?.question_title}
-            </Typography>
-          </Section>
-          {currentQuestion?.answers.map((item, index) => (
-            <Animated.View
-              key={index}
-              style={[{ flex: 1 }, focus !== item.answer_id && { opacity }]}
-            >
-              <TouchableOpacity
-                style={[
-                  { flex: 1 },
-                  {
-                    borderWidth: 2,
-                    borderColor:
-                      focus === item.answer_id ? "#9192FC" : "#F8FBFF",
-                    borderRadius: 10,
-                  },
-                ]}
-                onPress={() => handleFocusAnswer(item.answer_id)}
-                activeOpacity={1}
+        <>
+          <View style={styles.wrapper}>
+            <Header opacity={opacity} />
+            <Section style={[styles.container, { opacity }]}>
+              <Typography style={styles.title} gradient>
+                Вопрос {currentQuestion?.question_number} из{" "}
+                {currentQuestion?.questions_count}
+              </Typography>
+              <Typography style={styles.question}>
+                {currentQuestion?.question_title}
+              </Typography>
+            </Section>
+            {currentQuestion?.answers.map((item, index) => (
+              <Animated.View
+                key={index}
+                style={[{ flex: 1 }, focus !== item.answer_id && { opacity }]}
               >
-                <Section style={styles.answer}>
-                  <QuestionIcon />
-                  <Typography style={styles.answerTitle}>
-                    {item.answer_title}
-                  </Typography>
-                </Section>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-          <Button onPress={handleAnswer}>Далее</Button>
-        </View>
+                <TouchableOpacity
+                  style={[
+                    { flex: 1 },
+                    {
+                      borderWidth: 2,
+                      borderColor:
+                        focus === item.answer_id ? "#9192FC" : "#F8FBFF",
+                      borderRadius: 10,
+                    },
+                  ]}
+                  onPress={() => handleFocusAnswer(item.answer_id)}
+                  activeOpacity={1}
+                >
+                  <Section style={styles.answer}>
+                    <QuestionIcon />
+                    <Typography style={styles.answerTitle}>
+                      {item.answer_title}
+                    </Typography>
+                  </Section>
+                </TouchableOpacity>
+              </Animated.View>
+            ))}
+          </View>
+          <Animated.View
+            style={[
+              styles.footerButtons,
+              { opacity: focus === -1 ? opacity : 1 },
+            ]}
+          >
+            <Button type="red" onPress={handleBack}>
+              Назад
+            </Button>
+            <Button onPress={handleAnswer}>Далее</Button>
+          </Animated.View>
+        </>
       )}
     </>
   );
@@ -146,6 +168,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     fontWeight: Platform.OS === "android" ? "800" : "600",
+  },
+  footerButtons: {
+    gap: 5,
   },
 });
 

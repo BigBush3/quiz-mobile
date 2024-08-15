@@ -7,11 +7,14 @@ import React from "react";
 import { Typography } from "ui/Typography";
 import LinearGradient from "react-native-linear-gradient";
 
-interface ButtonProps extends TouchableOpacityProps {}
+interface ButtonProps extends TouchableOpacityProps {
+  type?: "red" | "default";
+}
 
 export const Button: React.FC<ButtonProps> = ({
   children,
   style,
+  type = "default",
   ...props
 }) => {
   return (
@@ -19,7 +22,9 @@ export const Button: React.FC<ButtonProps> = ({
       <LinearGradient
         start={{ x: 1, y: 1 }}
         end={{ x: 1, y: 0 }}
-        colors={["#9192FC", "#5C5CDE"]}
+        colors={
+          type === "red" ? ["#FC9191", "#DE5C6C"] : ["#9192FC", "#5C5CDE"]
+        }
         style={styles.container}
       >
         <Typography style={styles.title}>{children}</Typography>

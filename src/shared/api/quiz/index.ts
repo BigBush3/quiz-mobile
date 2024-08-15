@@ -12,6 +12,9 @@ class QuizApi {
   async getResult(): Promise<AxiosResponse<IResult>> {
     return $api.get("/tex/results");
   }
+  async goBack(): Promise<AxiosResponse<any>> {
+    return $api.post("/tex/answer/back");
+  }
 }
 
 export const quizApi = new QuizApi();

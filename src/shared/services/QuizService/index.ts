@@ -25,6 +25,11 @@ class QuizService {
     this.currentNumber += 1;
   };
 
+  goBack = async () => {
+    await quizApi.goBack();
+    this.currentNumber -= 1;
+  };
+
   getResult = async () => {
     const { data } = await quizApi.getResult();
     this.result = data;

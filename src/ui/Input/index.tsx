@@ -7,7 +7,7 @@ import {
   Platform,
   Animated,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Typography } from "ui";
 
 interface InputProps extends TextInputProps {
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     fontSize: 18,
     fontWeight: "400",
+    color: "#9192FC",
   },
   input: {
     fontSize: 18,

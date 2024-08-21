@@ -7,6 +7,7 @@ import axios, {
 import { DevSettings } from "react-native";
 import { MMKV } from "react-native-mmkv";
 import { IRefreshResponse } from "shared/types";
+import RNRestart from "react-native-restart";
 
 const storage = new MMKV();
 
@@ -66,7 +67,11 @@ $api.interceptors.response.use(
       } catch (refreshError) {
         storage.delete("token");
         storage.delete("refreshToken");
-        DevSettings.reload();
+        if (__DEV__) {
+          DevSettings.reload();
+        } else {
+          RNRestart.Restart();
+        }
       }
     }
     return Promise.reject(error);

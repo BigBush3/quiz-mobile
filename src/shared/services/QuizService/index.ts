@@ -11,8 +11,14 @@ class QuizService {
     makeAutoObservable(this);
   }
 
-  getQuestion = async () => {
+  initialGet = async () => {
     const { data } = await quizApi.getQuestion();
+    this.currentNumber = data.question_number;
+  };
+
+  getQuestion = async () => {
+    const { data } = await quizApi.getQuestion(this.currentNumber);
+    console.log(data);
     this.currentQuestion = data;
     return data;
   };
@@ -26,7 +32,6 @@ class QuizService {
   };
 
   goBack = async () => {
-    await quizApi.goBack();
     this.currentNumber -= 1;
   };
 

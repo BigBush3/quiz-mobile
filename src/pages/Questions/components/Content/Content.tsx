@@ -16,16 +16,21 @@ import { QuestionIcon } from "shared/icons";
 import { CommonActions } from "@react-navigation/native";
 
 const Content = observer(() => {
-  const { getQuestion, currentNumber, sendAnswer, currentQuestion, goBack } =
-    quizService;
+  const {
+    getQuestion,
+    currentNumber,
+    sendAnswer,
+    currentQuestion,
+    goBack,
+    initialGet,
+  } = quizService;
 
   const navigation = useTypedNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [focus, setFocus] = useState(0);
-
   const [opacity] = useState(new Animated.Value(1));
+  const [isInit, setIsInit] = useState(false);
 
   useEffect(() => {
     Animated.timing(opacity, {
@@ -37,6 +42,12 @@ const Content = observer(() => {
 
   useEffect(() => {
     setIsLoading(true);
+    const initial = async () => {
+      await initialGet();
+      setIsInit(true);
+    };
+
+    initial();
   }, []);
 
   useEffect(() => {
@@ -52,12 +63,19 @@ const Content = observer(() => {
         );
       }
 
-      setFocus(0);
+      if (data.selected_answer && typeof data.selected_answer !== "boolean") {
+        handleFocusAnswer(data.selected_answer);
+      } else {
+        setFocus(0);
+      }
+
       setIsLoading(false);
     };
 
-    fetchData();
-  }, [currentNumber]);
+    if (isInit) {
+      fetchData();
+    }
+  }, [currentNumber, isInit]);
 
   const handleFocusAnswer = async (answerId: number) => {
     if (focus === 0 || focus !== answerId) {

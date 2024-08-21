@@ -3,8 +3,14 @@ import { $api } from "shared/config";
 import { IQuestion, IResult, ISendAnswer } from "shared/types";
 
 class QuizApi {
-  async getQuestion(): Promise<AxiosResponse<IQuestion>> {
-    return $api.get("/tex/question");
+  async getQuestion(
+    numberQuestion?: number
+  ): Promise<AxiosResponse<IQuestion>> {
+    if (numberQuestion) {
+      return $api.get(`/tex/question/${numberQuestion}`);
+    } else {
+      return $api.get(`/tex/question`);
+    }
   }
   async sendAnswer(data: ISendAnswer): Promise<AxiosResponse<any>> {
     return $api.post("/tex/answer", data);

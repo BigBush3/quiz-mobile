@@ -15,6 +15,7 @@ export interface IQuestion {
   question_title: string;
   questions_count: number;
   test_finished: boolean;
+  selected_answer: boolean | number;
 }
 
 export interface IResult {

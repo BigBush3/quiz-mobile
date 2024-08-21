@@ -86,7 +86,7 @@ const Content = observer(() => {
             return (
               <View style={styles.header}>
                 <Typography style={styles.title} gradient>
-                  {"Результаты"}
+                  Результаты
                 </Typography>
               </View>
             );

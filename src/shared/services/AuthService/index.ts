@@ -1,19 +1,23 @@
 import { makeAutoObservable } from "mobx";
-import { DevSettings } from "react-native";
-import { MMKV } from "react-native-mmkv";
 import { authApi } from "shared/api";
-import RNRestart from "react-native-restart";
+import { storage } from "shared/utils/storage";
 
 class AuthService {
   email: string = "";
   password: string = "";
+  isAuth: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
+
+    this.isAuth = storage.getBoolean("isAuth") || false;
   }
 
-  changeProperty = (property: "email" | "password", value: string) => {
-    this[property] = value;
+  changeProperty = (
+    property: "email" | "password" | "isAuth",
+    value: string | boolean
+  ) => {
+    (this as any)[property] = value;
   };
 
   requestPassword = async () => {
@@ -22,15 +26,25 @@ class AuthService {
 
   login = async () => {
     try {
-      const storage = new MMKV();
       const { data } = await authApi.login(this.email, this.password);
-      storage.set("token", JSON.stringify(data.token));
-      storage.set("refreshToken", JSON.stringify(data.refresh_token));
-      DevSettings.reload();
-      RNRestart.Restart();
+      storage.set("token", data.token);
+      storage.set("refreshToken", data.refresh_token);
+      this.isAuth = true;
+      storage.set("isAuth", true);
     } catch (e: any) {
       console.log(e, "auth");
       return e.response;
+    }
+  };
+
+  logout = () => {
+    try {
+      storage.delete("token");
+      storage.delete("refreshToken");
+      this.isAuth = false;
+      storage.set("isAuth", false);
+    } catch (e: any) {
+      console.log(e);
     }
   };
 }

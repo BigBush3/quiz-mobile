@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Typography, Input, Button } from "ui";
+import { Typography, Input, Button, Loader } from "ui";
 import { Section } from "components";
 import { Platform, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
@@ -10,6 +10,8 @@ import { emailRegex } from "shared/constants";
 const Content = observer(() => {
   const { changeProperty, email, requestPassword } = authService;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigation = useTypedNavigation();
 
   const [status, setStatus] = useState<"success" | "default" | "error">(
@@ -17,8 +19,10 @@ const Content = observer(() => {
   );
 
   const handleNext = async () => {
+    setIsLoading(true);
     await requestPassword();
     navigation.navigate("EnterCode");
+    setIsLoading(false);
   };
 
   const handleChangeEmail = (email: string) => {
@@ -43,11 +47,11 @@ const Content = observer(() => {
           status={status}
         />
         <Button
-          style={[styles.button, { opacity: status === "success" ? 1 : 0.25 }]}
+          style={[styles.button, { opacity: (status === "success") ? 1 : 0.25 }]}
           onPress={handleNext}
-          disabled={status !== "success"}
+          disabled={status !== "success" || isLoading}
         >
-          Продолжить
+          {isLoading ? <Loader fullScreen={false} size={22} /> : "Продолжить"}
         </Button>
       </Section>
     </View>

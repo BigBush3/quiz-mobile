@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Input, Button } from "ui";
+import { Typography, Input, Button, Loader } from "ui";
 import { Section } from "components";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { observer } from "mobx-react-lite";
@@ -11,6 +11,8 @@ const Content = observer(() => {
   const [status, setStatus] = useState<"success" | "default" | "error">(
     "default"
   );
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [timeLeft, setTimeLeft] = useState(60);
 
@@ -31,10 +33,12 @@ const Content = observer(() => {
   };
 
   const handleNext = async () => {
+    setIsLoading(true);
     const data = await login();
     if (data) {
       setStatus("error");
     }
+    setIsLoading(false);
   };
 
   const handleChangePassword = (password: string) => {
@@ -99,9 +103,9 @@ const Content = observer(() => {
         <Button
           style={{ opacity: status === "success" ? 1 : 0.25 }}
           onPress={handleNext}
-          disabled={status !== "success"}
+          disabled={status !== "success" || isLoading}
         >
-          Продолжить
+          {isLoading ? <Loader fullScreen={false} size={22} /> : "Продолжить"}
         </Button>
       </Section>
     </View>

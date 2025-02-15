@@ -5,9 +5,13 @@ import {
   StyleSheet,
   TextInputProps,
   Platform,
-  Animated,
 } from "react-native";
-import React, { useRef } from "react";
+import React from "react";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { Typography } from "ui";
 
 interface InputProps extends TextInputProps {
@@ -22,25 +26,25 @@ export const Input: React.FC<InputProps> = ({
   errorText,
   ...props
 }) => {
-  const translateY = useRef(
-    new Animated.Value(Platform.OS === "ios" ? 12.5 : 15)
-  ).current;
+  const translateY = useSharedValue(Platform.OS === "ios" ? 12.5 : 15);
+
+  const animatedTitleStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   const handleFocus = () => {
-    Animated.timing(translateY, {
-      toValue: Platform.OS === "ios" ? 0 : 2.5,
+    translateY.value = withTiming(Platform.OS === "ios" ? 0 : 2.5, {
       duration: 150,
-      useNativeDriver: true,
-    }).start();
+    });
   };
 
   const handleBlur = () => {
     if (!(props.value && props.value.replaceAll(" ", "").length !== 0)) {
-      Animated.timing(translateY, {
-        toValue: Platform.OS === "ios" ? 12.5 : 15,
+      translateY.value = withTiming(Platform.OS === "ios" ? 12.5 : 15, {
         duration: 150,
-        useNativeDriver: true,
-      }).start();
+      });
     }
   };
 
@@ -53,7 +57,7 @@ export const Input: React.FC<InputProps> = ({
           status === "error" && { borderColor: "#FC9191" },
         ]}
       >
-        <Animated.Text style={[styles.title, { transform: [{ translateY }] }]}>
+        <Animated.Text style={[styles.title, animatedTitleStyle]}>
           {label}
         </Animated.Text>
         <TextInput

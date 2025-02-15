@@ -17,8 +17,15 @@ class QuizService {
   };
 
   getQuestion = async () => {
-    const { data } = await quizApi.getQuestion(this.currentNumber);
-    console.log(data);
+    const { data } = await quizApi.getQuestion(
+      this.currentQuestion?.questions_count ===
+        this.currentQuestion?.question_number &&
+        typeof this.currentQuestion?.questions_count === "number" &&
+        (this.currentQuestion?.questions_count === this.currentNumber ||
+          this.currentQuestion?.questions_count === this.currentNumber - 1)
+        ? undefined
+        : this.currentNumber
+    );
     this.currentQuestion = data;
     return data;
   };

@@ -1,16 +1,20 @@
 import React from "react";
-import { Animated, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+import Animated from "react-native-reanimated";
 import FastImage from "react-native-fast-image";
+import { Logo } from "ui";
+
 const Background = require("../../../assets/images/Background.png");
 
 interface HeaderProps {
-  opacity?: Animated.Value;
+  opacity?: Animated.SharedValue<number>;
 }
 
 const Header: React.FC<HeaderProps> = ({ opacity }) => {
   return (
     <Animated.View style={[styles.imageContainer, { opacity }]}>
-      <FastImage source={Background} style={styles.image} />
+      <Logo/>
+      <FastImage source={Background} style={styles.image}/>
     </Animated.View>
   );
 };
@@ -21,9 +25,11 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 10,
     marginTop: 5,
+    flexDirection: "row",
+    gap: 10
   },
   image: {
-    width: "100%",
+    width: Dimensions.get("window").width - 10 - 82 - 10,
     height: "100%",
     borderRadius: 10,
   },

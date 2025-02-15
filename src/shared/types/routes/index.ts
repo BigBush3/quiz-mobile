@@ -7,6 +7,8 @@ export type RootStackParamList = {
   Home: undefined;
   Questions: undefined;
   Result: undefined;
+  Profile: undefined;
+  Info: undefined;
 };
 
 export interface IRoute {

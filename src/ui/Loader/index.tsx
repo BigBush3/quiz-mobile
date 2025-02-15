@@ -10,7 +10,15 @@ import Animated, {
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { LoaderIcon } from "shared/icons";
 
-export const Loader = () => {
+interface LoaderProps {
+  fullScreen?: boolean;
+  size?: number;
+}
+
+export const Loader: React.FC<LoaderProps> = ({
+  fullScreen = true,
+  size = 24,
+}) => {
   const rotation = useSharedValue(0);
 
   useEffect(() => {
@@ -27,10 +35,10 @@ export const Loader = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={fullScreen ? styles.fullScreenContainer : styles.container}>
       <PanGestureHandler>
         <Animated.View style={animatedStyle}>
-          <LoaderIcon />
+          <LoaderIcon width={size} height={size} />
         </Animated.View>
       </PanGestureHandler>
     </View>
@@ -38,8 +46,12 @@ export const Loader = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  fullScreenContainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
     justifyContent: "center",
     alignItems: "center",
   },

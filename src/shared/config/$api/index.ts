@@ -6,26 +6,38 @@ import axios, {
 } from "axios";
 import { DevSettings } from "react-native";
 import { MMKV } from "react-native-mmkv";
+import { authService } from "shared/services";
 import { IRefreshResponse } from "shared/types";
-import RNRestart from "react-native-restart";
 
 const storage = new MMKV();
 
 const getToken = () => {
   const tokenString = storage.getString("token");
-  return tokenString ? JSON.parse(tokenString) : null;
+  return tokenString ? tokenString : null;
 };
 
 const getRefreshToken = () => {
   const refreshTokenString = storage.getString("refreshToken");
-  return refreshTokenString ? JSON.parse(refreshTokenString) : null;
+  return refreshTokenString ? refreshTokenString : null;
 };
 
 let accessToken = getToken();
 let refreshToken = getRefreshToken();
 
+storage.addOnValueChangedListener((key) => {
+  if (key === "token") {
+    accessToken = storage.getString(key) ?? null;
+  }
+});
+
+storage.addOnValueChangedListener((key) => {
+  if (key === "refreshToken") {
+    refreshToken = storage.getString(key) ?? null;
+  }
+});
+
 const $api = axios.create({
-  baseURL: "http://142.93.166.36:8080/api",
+  baseURL: "http://64.227.122.167:8080/api",
 });
 
 $api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -46,14 +58,15 @@ $api.interceptors.response.use(
       originalRequest._isRetry = true;
       try {
         const response = await axios.post<IRefreshResponse>(
-          "http://142.93.166.36:8080/api/auth/token/refresh",
+          "http://64.227.122.167:8080/api/auth/token/refresh",
           { refresh_token: refreshToken }
         );
+
         const newAccessToken = response.data.token;
         const newRefreshToken = response.data.refresh_token;
 
-        storage.set("token", JSON.stringify(newAccessToken));
-        storage.set("refreshToken", JSON.stringify(newRefreshToken));
+        storage.set("token", newAccessToken);
+        storage.set("refreshToken", newRefreshToken);
 
         accessToken = newAccessToken;
         refreshToken = newRefreshToken;
@@ -67,11 +80,8 @@ $api.interceptors.response.use(
       } catch (refreshError) {
         storage.delete("token");
         storage.delete("refreshToken");
-        if (__DEV__) {
-          DevSettings.reload();
-        } else {
-          RNRestart.Restart();
-        }
+        storage.set("isAuth", false);
+        authService.changeProperty("isAuth", false);
       }
     }
     return Promise.reject(error);

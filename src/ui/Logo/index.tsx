@@ -7,7 +7,7 @@ export const Logo = () => {
   return (
     <FastImage
       source={LogoImage}
-      style={{ width: 70, height: 70 }}
+      style={{ width: 82, height: 90 }}
       resizeMode={FastImage.resizeMode.contain}
     />
   );

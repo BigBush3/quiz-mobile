@@ -1,5 +1,6 @@
-import { View, StyleSheet, ViewProps, Animated } from "react-native";
+import { View, StyleSheet, ViewProps } from "react-native";
 import React from "react";
+import Animated from "react-native-reanimated";
 
 interface SectionProps extends ViewProps {}
 

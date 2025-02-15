@@ -13,7 +13,7 @@ const Content = observer(() => {
   const { width } = useWindowDimensions();
   const navigation = useTypedNavigation();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -37,15 +37,15 @@ const Content = observer(() => {
   return (
     <>
       {loading ? (
-        <Loader />
+        <Loader/>
       ) : (
         <View style={styles.wrapper}>
-          <Header />
+          <Header/>
           <Section style={styles.container}>
             {dayInfo?.test_finished ? (
               <>
                 <Typography gradient style={styles.completeTitle}>
-                  Поздравляем,{"\n"}Вы прошли 1/10 дней
+                  Поздравляем,{"\n"}Вы прошли {dayInfo?.day_number}/10 дней
                 </Typography>
                 <Button onPress={handleWatchResult}>
                   Посмотреть результаты

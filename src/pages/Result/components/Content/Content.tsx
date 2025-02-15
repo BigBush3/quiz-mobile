@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Typography, Button, Loader } from "ui";
-import { Header, Section } from "components";
+import { Header } from "components";
 import {
-  ScrollView,
   SectionList,
   StyleSheet,
   useWindowDimensions,
@@ -12,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { quizService } from "shared/services";
 import RenderHtml, { defaultSystemFonts } from "react-native-render-html";
 import { useTypedNavigation } from "shared/hooks/useTypedNavigation";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Content = observer(() => {
   const { result, getResult } = quizService;
@@ -20,6 +20,18 @@ const Content = observer(() => {
   const navigation = useTypedNavigation();
 
   const [loading, setLoading] = useState(false);
+
+  const scrollRef = useRef<SectionList<any>>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      scrollRef.current?.scrollToLocation({
+        itemIndex: 0,
+        sectionIndex: 0,
+        animated: true,
+      });
+    }, [])
+  );
 
   const fetchData = async () => {
     await getResult();
@@ -34,8 +46,6 @@ const Content = observer(() => {
 
   const handleEndTest = () => {
     navigation.navigate("Home");
-    setLoading(true);
-    fetchData();
   };
 
   const DATA = [
@@ -49,6 +59,7 @@ const Content = observer(() => {
         <Loader />
       ) : (
         <SectionList
+          ref={scrollRef}
           sections={DATA}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
